@@ -29,6 +29,18 @@ const finnishDays = [
   "lauantai"
 ];
 
+const dayOrNight = now => {
+  if (now.getHours() < 7) {
+    return "yö";
+  } else if (now.getHours() < 10) {
+    return "aamu";
+  } else if (now.getHours() < 18) {
+    return "päivä";
+  } else {
+    return "ilta";
+  }
+}
+
 function App() {
   const [dummyState, setDummyState] = React.useState(0);
   useInterval(() => {
@@ -42,16 +54,17 @@ function App() {
     finnishMonths[now.getMonth()] +
     "kuuta " +
     now.getFullYear();
-  const dayOrNight = now.getHours() > 6 && now.getHours() < 23 ? "Päivä" : "Yö";
 
   return (
     <div className="App">
       <div id="left">
-        NYT ON {dayOrNight}
-        <AnalogClock height={500} width={500} now={now} showTicks />
+        NYT ON {dayOrNight(now).toUpperCase()}<br />
+        <AnalogClock height={300} width={300} now={now} showTicks />
         <br />
-        {finnishDay} {finnishDate}<br />
-        klo {now.getHours()}.{('0'+now.getMinutes()).slice(-2)}
+        <div className="dayInfo">
+          {finnishDay} {finnishDate}<br />
+          kello {now.getHours()}.{('0'+now.getMinutes()).slice(-2)}
+        </div>
       </div>
       <div id="right">
       
