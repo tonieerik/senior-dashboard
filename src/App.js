@@ -29,7 +29,7 @@ const finnishDays = [
   "lauantai"
 ];
 
-const dayOrNight = now => {
+const timeOfTheDay = now => {
   if (now.getHours() < 7) {
     return "yö";
   } else if (now.getHours() < 10) {
@@ -41,11 +41,12 @@ const dayOrNight = now => {
   }
 }
 
-function App() {
+const App = () => {
   const [dummyState, setDummyState] = React.useState(0);
   useInterval(() => {
     setDummyState(dummyState + 1);
   }, 5000);
+
   const now = new Date();
   const finnishDay = finnishDays[now.getDay()];
   const finnishDate =
@@ -58,9 +59,8 @@ function App() {
   return (
     <div className="App">
       <div id="left">
-        NYT ON {dayOrNight(now).toUpperCase()}<br />
+        Nyt on {timeOfTheDay(now)}<br />
         <AnalogClock height={300} width={300} now={now} showTicks />
-        <br />
         <div className="dayInfo">
           {finnishDay} {finnishDate}<br />
           kello {now.getHours()}.{('0'+now.getMinutes()).slice(-2)}

@@ -17,6 +17,9 @@ body {
 .dayInfo {
   font-size: 20pt;
 }
+.clockHourLabel {
+  font-size: 12pt;
+}
 
 .App > div {
   text-align: center;
