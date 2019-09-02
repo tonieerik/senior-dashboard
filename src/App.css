@@ -5,28 +5,44 @@ body {
   overflow: hidden;
   height: 100%;
   background: #222222;
-  color: #eee;
+  color: #ccc;
+}
+td {
+  font-size: 16pt;
+  padding-right: 20px;
+  padding-bottom: 40px;
+  text-align: left;
+  vertical-align: top;
+}
+td.time {
+  min-width: 180px;
+}
+.section-title {
+  margin-bottom: 30px;
+  text-align: left;
+}
+.description {
+  font-size: 14pt;
 }
 .App {
   font-family: 'Varela Round', sans-serif;
   font-size: 24pt;
   display: flex;
   flex-direction: row;
+  margin-top: 20px;
   width: 100%;
+}
+#left {
+  width: 35%;
+  text-align: center;
+}
+#right {
+  margin-left: 100px;
+  color: #bbbb88;
 }
 .dayInfo {
   font-size: 20pt;
 }
 .clockHourLabel {
   font-size: 12pt;
-}
-
-.App > div {
-  text-align: center;
-  flex: 1;
-}
-
-#right {
-  padding: 1em;
-  line-height: 2em;
 }

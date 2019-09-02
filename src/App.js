@@ -1,4 +1,6 @@
 import React from 'react';
+import axios from 'axios';
+import moment from 'moment';
 import AnalogClock from "./AnalogClock";
 import useInterval from "./useInterval";
 
@@ -42,10 +44,7 @@ const timeOfTheDay = now => {
 }
 
 const App = () => {
-  const [dummyState, setDummyState] = React.useState(0);
-  useInterval(() => {
-    setDummyState(dummyState + 1);
-  }, 5000);
+  const [sennuEvents, setSennuEvents] = React.useState([]);
 
   const now = new Date();
   const finnishDay = finnishDays[now.getDay()];
@@ -55,6 +54,11 @@ const App = () => {
     finnishMonths[now.getMonth()] +
     "kuuta " +
     now.getFullYear();
+
+  ! sennuEvents.length && axios
+    .get('https://sennu-backend.herokuapp.com/')
+    .then(response => {setSennuEvents(JSON.parse(response.data))})
+    .catch(e => console.err(e));
 
   return (
     <div className="App">
@@ -67,7 +71,25 @@ const App = () => {
         </div>
       </div>
       <div id="right">
-      
+        <div className="section-title">Kalenteri</div>
+        <table><tbody>
+        {
+          sennuEvents.map(event => 
+            <tr>
+              <td className="time">
+                {moment(event.start).format("D")}. {finnishMonths[moment(event.start).format("M")-1]}kuuta
+                <br />
+                kello {moment(event.start).format("HH.mm")}
+              </td>
+              <td>
+                {event.title} {event.location ? '/' : ''} {event.location}
+                <br />
+                <span className="description">{event.description}</span>
+              </td>
+            </tr>
+          )
+        }
+        </tbody></table>
       </div>
     </div>
   );

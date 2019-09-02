@@ -16,7 +16,7 @@ const AnalogClock = ({
   showTicks,
   handColorSecond = "#ff2222",
   handColorMinute = "#fbc531",
-  handColorHour = "#9b6531",
+  handColorHour = "#db5531",
   faceColor = "#e5e5e5"
 }) => {
   const minQ = now.getMinutes() / 60;
@@ -59,7 +59,7 @@ const AnalogClock = ({
       <line
         x1={100}
         y1={100}
-        {...getAngleCoords(100, 100, hourAngle, 40)}
+        {...getAngleCoords(100, 100, hourAngle, 35)}
         strokeWidth={8}
         stroke={handColorHour}
         strokeLinecap="round"
