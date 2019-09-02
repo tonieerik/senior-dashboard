@@ -44,6 +44,11 @@ const timeOfTheDay = now => {
 }
 
 const App = () => {
+  const [dummy, setDummy] = React.useState(0);
+  useInterval(() => {
+    setDummy(dummy + 1);
+  }, 10000);
+
   const [sennuEvents, setSennuEvents] = React.useState([]);
 
   const now = new Date();
