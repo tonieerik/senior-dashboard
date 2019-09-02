@@ -66,12 +66,12 @@ const App = () => {
         Nyt on {timeOfTheDay(now)}<br />
         <AnalogClock height={300} width={300} now={now} showTicks />
         <div className="dayInfo">
-          {finnishDay} {finnishDate}<br />
+          {finnishDay}<br />{finnishDate}<br />
           kello {now.getHours()}.{('0'+now.getMinutes()).slice(-2)}
         </div>
       </div>
       <div id="right">
-        <div className="section-title">Kalenteri</div>
+        <div className="sectionTitle">Kalenteri</div>
         <table><tbody>
         {
           sennuEvents.map(event => 
@@ -82,9 +82,9 @@ const App = () => {
                 kello {moment(event.start).format("HH.mm")}
               </td>
               <td>
-                {event.title} {event.location ? '/' : ''} {event.location}
+                <span className="eventHeader">{event.title} {event.location ? '/' : ''} {event.location}</span>
                 <br />
-                <span className="description">{event.description}</span>
+                <span className="eventDescription">{event.description}</span>
               </td>
             </tr>
           )

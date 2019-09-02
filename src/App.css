@@ -5,7 +5,7 @@ body {
   overflow: hidden;
   height: 100%;
   background: #222222;
-  color: #ccc;
+  color: #ddd;
 }
 td {
   border-top: 1px solid #bbbb88;
@@ -17,11 +17,14 @@ td {
 td.time {
   min-width: 160px;
 }
-.section-title {
+.sectionTitle {
   margin-bottom: 30px;
   text-align: left;
 }
-.description {
+.eventHeader {
+  color: #ddd;
+}
+.eventDescription {
   font-size: 14pt;
 }
 .App {
