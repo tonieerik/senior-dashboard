@@ -15,9 +15,9 @@ const AnalogClock = ({
   showSeconds,
   showTicks,
   handColorSecond = "#ff2222",
-  handColorMinute = "#fbc531",
-  handColorHour = "#db5531",
-  faceColor = "#e5e5e5"
+  handColorMinute = "#dba511",
+  handColorHour = "#cb4521",
+  faceColor = "#333333"
 }) => {
   const minQ = now.getMinutes() / 60;
   const hourAngle = (now.getHours() / 12) * 360 + minQ * (360 / 12);
@@ -28,7 +28,6 @@ const AnalogClock = ({
   if (showTicks) {
     for (let i = 0; i < 12; i++) {
       const angle = (i / 12) * 360;
-      //const c0 = getAngleCoords(100, 100, angle, 66, "x1", "y1");
       const c1 = getAngleCoords(100, 100, angle, 76, "x2", "y2");
 
       ticks.push(
@@ -41,15 +40,6 @@ const AnalogClock = ({
           fill={faceColor}>
           {i === 0 ? 12 : i}
         </text>
-        /*
-        <line
-          {...c0}
-          {...c1}
-          stroke={faceColor}
-          key={i}
-          strokeLinecap="round"
-        />
-        */
       );
     }
   }
@@ -59,8 +49,8 @@ const AnalogClock = ({
       <line
         x1={100}
         y1={100}
-        {...getAngleCoords(100, 100, hourAngle, 35)}
-        strokeWidth={8}
+        {...getAngleCoords(100, 100, hourAngle, 40)}
+        strokeWidth={10}
         stroke={handColorHour}
         strokeLinecap="round"
       />

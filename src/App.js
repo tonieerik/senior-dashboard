@@ -1,47 +1,56 @@
 import React from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
+
 import AnalogClock from "./AnalogClock";
 import useInterval from "./useInterval";
+
+import darkTheme from './themes/dark'
+import lightTheme from './themes/light'
 
 import './App.css';
 
 const finnishMonths = [
-  "tammi",
-  "helmi",
-  "maalis",
-  "huhti",
-  "touko",
-  "kesä",
-  "heinä",
-  "elo",
-  "syys",
-  "loka",
-  "marras",
-  "joulu"
+  "TAMMI",
+  "HELMI",
+  "MAALIS",
+  "HUHTI",
+  "TOUKO",
+  "KESÄ",
+  "HEINÄ",
+  "ELO",
+  "SYYS",
+  "LOKA",
+  "MARRAS",
+  "JOULU"
 ];
 
 const finnishDays = [
-  "sunnuntai",
-  "maanantai",
-  "tiistai",
-  "keskiviikko",
-  "torstai",
-  "perjantai",
-  "lauantai"
+  "SUNNUNTAI",
+  "MAANANTAI",
+  "TIISTAI",
+  "KESKIVIIKKO",
+  "TORSTAI",
+  "PERJANTAI",
+  "LAUANTAI"
 ];
 
 const timeOfTheDay = now => {
-  if (now.getHours() < 7) {
-    return "yö";
+  if (now.getHours() < 6) {
+    return "YÖ";
   } else if (now.getHours() < 10) {
-    return "aamu";
-  } else if (now.getHours() < 18) {
-    return "päivä";
+    return "AAMU";
+  } else if (now.getHours() < 16) {
+    return "PÄIVÄ";
+  } else if (now.getHours() < 23) {
+    return "ILTA";
   } else {
-    return "ilta";
+    return "YÖ";
   }
 }
+
+const isNight = now => timeOfTheDay(now) === 'YÖ';
 
 const App = () => {
   const [dummy, setDummy] = React.useState(0);
@@ -57,7 +66,7 @@ const App = () => {
     now.getDate() +
     ". " +
     finnishMonths[now.getMonth()] +
-    "kuuta " +
+    "KUUTA " +
     now.getFullYear();
 
   ! sennuEvents.length && axios
@@ -65,38 +74,83 @@ const App = () => {
     .then(response => {setSennuEvents(JSON.parse(response.data))})
     .catch(e => console.err(e));
 
+  const GlobalStyle = createGlobalStyle`
+    body {
+      background-color: ${props => props.theme.colors.background};
+      color: ${props => props.theme.colors.textColor};
+    }
+  `
+
+  const AppContainer = styled.div`
+    font-family: 'Varela Round', sans-serif;
+    font-size: 24px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 20px;
+    width: 100%;
+  `
+
+  const SectionTitle = styled.div`
+    color: ${props => props.theme.colors.calendarTextColor};
+    margin-bottom: 30px;
+    text-align: left;
+  `
+
+  const Time = styled.td`
+    color: ${props => props.theme.colors.calendarTextColor};
+    min-width: 180px;
+  `
+
+  const EventHeader = styled.span`
+    color: ${props => props.theme.colors.calendarTextColor};
+  `
+
+  const EventDescription = styled.span`
+    color: ${props => props.theme.colors.calendarDetailTextColor};
+    font-size: 18px;
+  `
+
   return (
-    <div className="App">
-      <div id="left">
-        Nyt on {timeOfTheDay(now)}<br />
-        <AnalogClock height={300} width={300} now={now} showTicks />
-        <div className="dayInfo">
-          {finnishDay}<br />{finnishDate}<br />
-          kello {now.getHours()}.{('0'+now.getMinutes()).slice(-2)}
+    <ThemeProvider theme={isNight(now) ? darkTheme : lightTheme}>
+      <AppContainer>
+        <GlobalStyle />
+        <div id="left">
+          NYT ON {timeOfTheDay(now)}<br />
+          <AnalogClock
+            faceColor={isNight(now) ? "#e5e5e5" : undefined}
+            height={300}
+            width={300}
+            now={now}
+            showTicks />
+          <div className="dayInfo">
+            {finnishDay}<br />{finnishDate}<br />
+            kello {now.getHours()}.{('0'+now.getMinutes()).slice(-2)}
+          </div>
         </div>
-      </div>
-      <div id="right">
-        <div className="sectionTitle">Kalenteri</div>
-        <table><tbody>
-        {
-          sennuEvents.map(event => 
-            <tr>
-              <td className="time">
-                {moment(event.start).format("D")}. {finnishMonths[moment(event.start).format("M")-1]}kuuta
-                <br />
-                kello {moment(event.start).format("HH.mm")}
-              </td>
-              <td>
-                <span className="eventHeader">{event.title} {event.location ? '/' : ''} {event.location}</span>
-                <br />
-                <span className="eventDescription">{event.description}</span>
-              </td>
-            </tr>
-          )
-        }
-        </tbody></table>
-      </div>
-    </div>
+        <div id="right">
+          <SectionTitle>KALENTERI</SectionTitle>
+          <table><tbody>
+          {
+            sennuEvents.map((event, i) => 
+              <tr key={i}>
+                <Time>
+                  {moment(event.start).format("D")}. {finnishMonths[moment(event.start).format("M")-1]}KUUTA
+                  <br />
+                  KELLO {moment(event.start).format("HH.mm")}
+                </Time>
+                <td>
+                  <EventHeader>{event.title} {event.location ? '/' : ''} {event.location}</EventHeader>
+                  <br />
+                  <EventDescription>{event.description}</EventDescription>
+                </td>
+              </tr>
+            )
+          }
+          </tbody></table>
+        </div>
+      </AppContainer>
+    </ThemeProvider>
   );
 }
 

@@ -1,6 +1,6 @@
-@import url('https://fonts.googleapis.com/css?family=Varela+Round&display=swap');
-
 body {
+  font-family: 'Varela Round', sans-serif;
+  font-size: 14px;
   margin: 0;
   overflow: hidden;
   height: 100%;
@@ -8,44 +8,29 @@ body {
   color: #ddd;
 }
 td {
-  border-top: 1px solid #bbbb88;
+  border-top: 1px solid #999999;
   font-size: 16pt;
   padding: 10px 20px 30px 0;
   text-align: left;
   vertical-align: top;
 }
-td.time {
-  min-width: 160px;
-}
-.sectionTitle {
-  margin-bottom: 30px;
-  text-align: left;
-}
-.eventHeader {
-  color: #ddd;
-}
-.eventDescription {
-  font-size: 14pt;
-}
-.App {
-  font-family: 'Varela Round', sans-serif;
-  font-size: 24pt;
-  display: flex;
-  flex-direction: row;
-  margin-top: 20px;
-  width: 100%;
-}
 #left {
-  width: 35%;
+  width: 30%;
   text-align: center;
 }
 #right {
-  margin-left: 100px;
   color: #bbbb88;
+  margin-left: 50px;
+  width: 60%;
 }
 .dayInfo {
-  font-size: 20pt;
+  font-size: 20px;
 }
 .clockHourLabel {
-  font-size: 12pt;
+  font-size: 16px;
+}
+
+@media only screen and (max-width: 768px) {
+  #left { width: 100%; }
+  #right { display: none; }
 }
