@@ -67,7 +67,7 @@ const App = () => {
       .then(json => setSennuEvents(JSON.parse(json)))
       .catch(e => console.error(e));
 
-  useInterval(() => { setTick(tick); }, 10000);
+  useInterval(() => { setTick(tick+1); }, 10000);
   useInterval(getCalendarEvents, REFRESH_INTERVAL);
 
   ! sennuEvents.length && getCalendarEvents();
