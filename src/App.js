@@ -1,7 +1,7 @@
 import React from 'react';
-import axios from 'axios';
-import moment from 'moment';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
+import moment from 'moment';
+import 'moment/min/locales';
 
 import AnalogClock from "./AnalogClock";
 import useInterval from "./useInterval";
@@ -10,6 +10,11 @@ import darkTheme from './themes/dark'
 import lightTheme from './themes/light'
 
 import './App.css';
+
+const BACKEND_URL = 'https://sennu-backend.herokuapp.com/';
+const REFRESH_INTERVAL = 6*60*60*1000; // milliseconds
+
+moment.locale('fi');
 
 const finnishMonths = [
   "TAMMI",
@@ -41,7 +46,7 @@ const timeOfTheDay = now => {
     return "YÖ";
   } else if (now.getHours() < 10) {
     return "AAMU";
-  } else if (now.getHours() < 16) {
+  } else if (now.getHours() < 17) {
     return "PÄIVÄ";
   } else if (now.getHours() < 23) {
     return "ILTA";
@@ -53,12 +58,19 @@ const timeOfTheDay = now => {
 const isNight = now => timeOfTheDay(now) === 'YÖ';
 
 const App = () => {
-  const [dummy, setDummy] = React.useState(0);
-  useInterval(() => {
-    setDummy(dummy + 1);
-  }, 10000);
-
   const [sennuEvents, setSennuEvents] = React.useState([]);
+  const [tick, setTick] = React.useState(0);
+
+  const getCalendarEvents = () =>
+    fetch(BACKEND_URL)
+      .then(response => response.json())
+      .then(json => setSennuEvents(JSON.parse(json)))
+      .catch(e => console.error(e));
+
+  useInterval(() => { setTick(tick); }, 10000);
+  useInterval(getCalendarEvents, REFRESH_INTERVAL);
+
+  ! sennuEvents.length && getCalendarEvents();
 
   const now = new Date();
   const finnishDay = finnishDays[now.getDay()];
@@ -69,11 +81,6 @@ const App = () => {
     "KUUTA " +
     now.getFullYear();
 
-  ! sennuEvents.length && axios
-    .get('https://sennu-backend.herokuapp.com/')
-    .then(response => {setSennuEvents(JSON.parse(response.data))})
-    .catch(e => console.err(e));
-
   const GlobalStyle = createGlobalStyle`
     body {
       background-color: ${props => props.theme.colors.background};
@@ -81,25 +88,37 @@ const App = () => {
     }
   `
 
-  const AppContainer = styled.div`
-    font-family: 'Varela Round', sans-serif;
-    font-size: 24px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    width: 100%;
+  const TimeOfDay = styled.div`
+    background-color: ${props => props.theme.colors.infoPillBgColor};
+    border: 1px solid ${props => props.theme.colors.infoPillBorderColor};
+    border-radius: 15px;
+    color: ${props => props.theme.colors.infoPillColor};
+    margin: auto;
+    padding: 5px; 
+    width: 50%;
   `
 
   const SectionTitle = styled.div`
-    color: ${props => props.theme.colors.calendarTextColor};
-    margin-bottom: 30px;
+    background-color: ${props => props.theme.colors.calendarHeaderBgColor};
+    border-radius: 10px;
+    color: ${props => props.theme.colors.calendarHeaderColor};
+    font-size: 28px;
+    padding: 10px;
     text-align: left;
   `
 
   const Time = styled.td`
     color: ${props => props.theme.colors.calendarTextColor};
     min-width: 180px;
+  `
+
+  const TimeTo = styled.span`
+    background-color: ${props => props.theme.colors.infoPillBgColor};
+    border: 1px solid ${props => props.theme.colors.infoPillBorderColor};
+    border-radius: 5px;
+    color: ${props => props.theme.colors.infoPillColor};
+    font-size: 14px;
+    padding: 5px;
   `
 
   const EventHeader = styled.span`
@@ -113,10 +132,10 @@ const App = () => {
 
   return (
     <ThemeProvider theme={isNight(now) ? darkTheme : lightTheme}>
-      <AppContainer>
+      <div id="AppContainer">
         <GlobalStyle />
         <div id="left">
-          NYT ON {timeOfTheDay(now)}<br />
+          <TimeOfDay>NYT ON {timeOfTheDay(now)}</TimeOfDay>
           <AnalogClock
             faceColor={isNight(now) ? "#e5e5e5" : undefined}
             height={300}
@@ -135,9 +154,9 @@ const App = () => {
             sennuEvents.map((event, i) => 
               <tr key={i}>
                 <Time>
-                  {moment(event.start).format("D")}. {finnishMonths[moment(event.start).format("M")-1]}KUUTA
-                  <br />
-                  KELLO {moment(event.start).format("HH.mm")}
+                  {moment(event.start).format("D")}. {finnishMonths[moment(event.start).format("M")-1]}KUUTA<br />
+                  KELLO {moment(event.start).format("HH.mm")}<br />
+                  <TimeTo>{moment(event.start).fromNow()}</TimeTo>
                 </Time>
                 <td>
                   <EventHeader>{event.title} {event.location ? '/' : ''} {event.location}</EventHeader>
@@ -149,7 +168,7 @@ const App = () => {
           }
           </tbody></table>
         </div>
-      </AppContainer>
+      </div>
     </ThemeProvider>
   );
 }
