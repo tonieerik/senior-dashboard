@@ -3,6 +3,7 @@ import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
 import moment from 'moment';
 import 'moment/min/locales';
 
+import Calendar from './Calendar';
 import AnalogClock from "./AnalogClock";
 import useInterval from "./useInterval";
 
@@ -167,6 +168,7 @@ const App = () => {
             )
           }
           </tbody></table>
+          <Calendar />
         </div>
       </div>
     </ThemeProvider>
