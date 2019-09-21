@@ -1,45 +1,39 @@
-import React from 'react';
-import styled, { createGlobalStyle, ThemeProvider } from 'styled-components'
-import moment from 'moment';
-import 'moment/min/locales';
+import React from "react";
+import { ThemeProvider } from "styled-components";
+import moment from "moment";
+import "moment/min/locales";
 
+import Calendar from "./Calendar";
 import AnalogClock from "./AnalogClock";
 import useInterval from "./useInterval";
 
-import darkTheme from './themes/dark'
-import lightTheme from './themes/light'
+import darkTheme from "./themes/dark";
+import lightTheme from "./themes/light";
 
-import './App.css';
+import {
+  AppContainer,
+  Black,
+  CalendarContainer,
+  ClockContainer,
+  CurrentDateTime,
+  Event,
+  EventContainer,
+  EventDescription,
+  EventDetails,
+  EventHeader,
+  EventTitle,
+  GlobalStyle,
+  TimeTo
+} from "./appStyles";
 
-const BACKEND_URL = 'https://sennu-backend.herokuapp.com/';
-const REFRESH_INTERVAL = 6*60*60*1000; // milliseconds
+import {
+  BACKEND_URL,
+  REFRESH_INTERVAL,
+  finnishDays,
+  finnishMonths
+} from "./const";
 
-moment.locale('fi');
-
-const finnishMonths = [
-  "TAMMI",
-  "HELMI",
-  "MAALIS",
-  "HUHTI",
-  "TOUKO",
-  "KESÄ",
-  "HEINÄ",
-  "ELO",
-  "SYYS",
-  "LOKA",
-  "MARRAS",
-  "JOULU"
-];
-
-const finnishDays = [
-  "SUNNUNTAI",
-  "MAANANTAI",
-  "TIISTAI",
-  "KESKIVIIKKO",
-  "TORSTAI",
-  "PERJANTAI",
-  "LAUANTAI"
-];
+moment.locale("fi");
 
 const timeOfTheDay = now => {
   if (now.getHours() < 6) {
@@ -53,9 +47,9 @@ const timeOfTheDay = now => {
   } else {
     return "YÖ";
   }
-}
+};
 
-const isNight = now => timeOfTheDay(now) === 'YÖ';
+const isNight = now => timeOfTheDay(now) === "YÖ";
 
 const App = () => {
   const [sennuEvents, setSennuEvents] = React.useState([]);
@@ -67,10 +61,12 @@ const App = () => {
       .then(json => setSennuEvents(JSON.parse(json)))
       .catch(e => console.error(e));
 
-  useInterval(() => { setTick(tick+1); }, 10000);
+  useInterval(() => {
+    setTick(tick + 1);
+  }, 10000);
   useInterval(getCalendarEvents, REFRESH_INTERVAL);
 
-  ! sennuEvents.length && getCalendarEvents();
+  !sennuEvents.length && getCalendarEvents();
 
   const now = new Date();
   const finnishDay = finnishDays[now.getDay()];
@@ -78,99 +74,66 @@ const App = () => {
     now.getDate() +
     ". " +
     finnishMonths[now.getMonth()] +
-    "KUUTA " +
+    "TA " +
     now.getFullYear();
 
-  const GlobalStyle = createGlobalStyle`
-    body {
-      background-color: ${props => props.theme.colors.background};
-      color: ${props => props.theme.colors.textColor};
-    }
-  `
+  const renderClockContainer = () => (
+    <ClockContainer>
+      <AnalogClock
+        faceColor={isNight(now) ? "#333333" : undefined}
+        height={250}
+        now={now}
+        showTicks
+        strokeColor={isNight(now) ? "#e5e5e5" : undefined}
+        width={250}
+      />
+      <CurrentDateTime>
+        <Black>NYT ON {timeOfTheDay(now)}</Black>
+        <br />
+        kello {now.getHours()}.{("0" + now.getMinutes()).slice(-2)}
+        <br />
+        {finnishDay} {finnishDate}
+      </CurrentDateTime>
+    </ClockContainer>
+  );
 
-  const TimeOfDay = styled.div`
-    background-color: ${props => props.theme.colors.infoPillBgColor};
-    border: 1px solid ${props => props.theme.colors.infoPillBorderColor};
-    border-radius: 15px;
-    color: ${props => props.theme.colors.infoPillColor};
-    margin: auto;
-    padding: 5px; 
-    width: 50%;
-  `
-
-  const SectionTitle = styled.div`
-    background-color: ${props => props.theme.colors.calendarHeaderBgColor};
-    border-radius: 10px;
-    color: ${props => props.theme.colors.calendarHeaderColor};
-    font-size: 28px;
-    padding: 10px;
-    text-align: left;
-  `
-
-  const Time = styled.td`
-    color: ${props => props.theme.colors.calendarTextColor};
-    min-width: 180px;
-  `
-
-  const TimeTo = styled.span`
-    background-color: ${props => props.theme.colors.infoPillBgColor};
-    border: 1px solid ${props => props.theme.colors.infoPillBorderColor};
-    border-radius: 5px;
-    color: ${props => props.theme.colors.infoPillColor};
-    font-size: 14px;
-    padding: 5px;
-  `
-
-  const EventHeader = styled.span`
-    color: ${props => props.theme.colors.calendarTextColor};
-  `
-
-  const EventDescription = styled.span`
-    color: ${props => props.theme.colors.calendarDetailTextColor};
-    font-size: 18px;
-  `
+  const renderCalendarContainer = () => (
+    <CalendarContainer>
+      <div>
+        <Calendar date={moment()} events={sennuEvents} />
+        <Calendar date={moment().add(1, "month")} events={sennuEvents} />
+      </div>
+      <EventContainer>
+        <EventTitle>KALENTERIMERKINNÄT</EventTitle>
+        {sennuEvents.map((event, i) => (
+          <Event key={i}>
+            {finnishDays[moment(event.start).day()]}{" "}
+            {moment(event.start).format("D")}.{" "}
+            {finnishMonths[moment(event.start).format("M") - 1]}TA kello{" "}
+            {moment(event.start).format("HH.mm")}
+            <TimeTo>{moment(event.start).fromNow()}</TimeTo>
+            <EventDetails>
+              <EventHeader>
+                {event.title} {event.location ? "/" : ""} {event.location}
+              </EventHeader>
+              <br />
+              <EventDescription>{event.description}</EventDescription>
+            </EventDetails>
+          </Event>
+        ))}
+      </EventContainer>
+    </CalendarContainer>
+  );
 
   return (
     <ThemeProvider theme={isNight(now) ? darkTheme : lightTheme}>
-      <div id="AppContainer">
+      <AppContainer>
         <GlobalStyle />
-        <div id="left">
-          <TimeOfDay>NYT ON {timeOfTheDay(now)}</TimeOfDay>
-          <AnalogClock
-            faceColor={isNight(now) ? "#e5e5e5" : undefined}
-            height={300}
-            width={300}
-            now={now}
-            showTicks />
-          <div className="dayInfo">
-            {finnishDay}<br />{finnishDate}<br />
-            kello {now.getHours()}.{('0'+now.getMinutes()).slice(-2)}
-          </div>
-        </div>
-        <div id="right">
-          <SectionTitle>KALENTERI</SectionTitle>
-          <table><tbody>
-          {
-            sennuEvents.map((event, i) => 
-              <tr key={i}>
-                <Time>
-                  {moment(event.start).format("D")}. {finnishMonths[moment(event.start).format("M")-1]}KUUTA<br />
-                  KELLO {moment(event.start).format("HH.mm")}<br />
-                  <TimeTo>{moment(event.start).fromNow()}</TimeTo>
-                </Time>
-                <td>
-                  <EventHeader>{event.title} {event.location ? '/' : ''} {event.location}</EventHeader>
-                  <br />
-                  <EventDescription>{event.description}</EventDescription>
-                </td>
-              </tr>
-            )
-          }
-          </tbody></table>
-        </div>
-      </div>
+        {renderClockContainer()}
+        {renderCalendarContainer()}
+      </AppContainer>
     </ThemeProvider>
   );
-}
+};
 
 export default App;
