@@ -1,12 +1,19 @@
 import React from "react";
 
-const getAngleCoords = (x0, y0, angleDeg, radius, xProp = "x2", yProp = "y2") => {
+const getAngleCoords = (
+  x0,
+  y0,
+  angleDeg,
+  radius,
+  xProp = "x2",
+  yProp = "y2"
+) => {
   const angleRad = ((angleDeg - 90) / 360) * Math.PI * 2;
   return {
     [xProp]: x0 + Math.cos(angleRad) * radius,
     [yProp]: y0 + Math.sin(angleRad) * radius
   };
-}
+};
 
 const AnalogClock = ({
   now,
@@ -17,7 +24,8 @@ const AnalogClock = ({
   handColorSecond = "#ff2222",
   handColorMinute = "#dba511",
   handColorHour = "#cb4521",
-  faceColor = "#333333"
+  faceColor = "#f5f5f5",
+  strokeColor = "#333333"
 }) => {
   const minQ = now.getMinutes() / 60;
   const hourAngle = (now.getHours() / 12) * 360 + minQ * (360 / 12);
@@ -32,12 +40,13 @@ const AnalogClock = ({
 
       ticks.push(
         <text
-          className="clockHourLabel"
+          style={{ fontSize: "16px" }}
           key={i}
-          x={c1.x2-5}
+          x={c1.x2 - 5}
           y={c1.y2}
           alignmentBaseline="middle"
-          fill={faceColor}>
+          fill={strokeColor}
+        >
           {i === 0 ? 12 : i}
         </text>
       );
@@ -46,6 +55,14 @@ const AnalogClock = ({
 
   return (
     <svg width={width} height={height} viewBox="0 0 200 200">
+      <circle
+        cx={100}
+        cy={100}
+        r={90}
+        fill={faceColor}
+        strokeWidth={5}
+        stroke={strokeColor}
+      />
       <line
         x1={100}
         y1={100}
@@ -75,16 +92,8 @@ const AnalogClock = ({
         />
       )}
       {ticks}
-      <circle
-        cx={100}
-        cy={100}
-        r={90}
-        fill="none"
-        strokeWidth={5}
-        stroke={faceColor}
-      />
     </svg>
   );
-}
+};
 
 export default AnalogClock;
