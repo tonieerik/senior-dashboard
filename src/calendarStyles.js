@@ -22,7 +22,7 @@ export const Cell = styled.td`
   background-color: ${props => props.theme.colors.cellBg};
   border: none;
   border-radius: 10px;
-  font-size: 20px;
+  font-size: 18px;
   padding: 5px;
   text-align: right;
 `;
